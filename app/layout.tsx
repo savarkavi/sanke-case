@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import Footer from "@/components/Footer";
+import { Toaster } from "react-hot-toast";
+import ReactQueryProvider from "@/context/ReactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,8 +26,11 @@ export default function RootLayout({
           className={`${inter.className} min-h-screen h-full flex flex-col justify-between`}
         >
           <Navbar />
-          <main className="h-full">{children}</main>
+          <main className="h-full">
+            <ReactQueryProvider>{children}</ReactQueryProvider>
+          </main>
           <Footer />
+          <Toaster />
         </body>
       </ClerkProvider>
     </html>

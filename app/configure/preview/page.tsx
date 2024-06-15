@@ -1,16 +1,16 @@
-import DesignConfigurator from "@/components/DesignConfigurator";
+import DesignPreview from "@/components/DesignPreview";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Steps from "@/components/Steps";
 import { db } from "@/db";
 import { notFound } from "next/navigation";
 
-interface DesignProps {
+interface PreviewPageParams {
   searchParams: {
     [key: string]: string | undefined;
   };
 }
 
-const DesignPage = async ({ searchParams }: DesignProps) => {
+const PreiviewPage = async ({ searchParams }: PreviewPageParams) => {
   const { id } = searchParams;
 
   if (!id) {
@@ -26,20 +26,12 @@ const DesignPage = async ({ searchParams }: DesignProps) => {
   if (!configuration) {
     return notFound();
   }
-
-  const { imageUrl, width, height } = configuration;
-
   return (
     <MaxWidthWrapper className="min-h-[calc(100vh-138px)]">
       <Steps />
-      <DesignConfigurator
-        configId={id}
-        imageUrl={imageUrl}
-        width={width}
-        height={height}
-      />
+      <DesignPreview configuration={configuration} />
     </MaxWidthWrapper>
   );
 };
 
-export default DesignPage;
+export default PreiviewPage;

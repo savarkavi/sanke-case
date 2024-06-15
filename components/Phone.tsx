@@ -11,7 +11,7 @@ interface PhoneProps extends HTMLAttributes<HTMLDivElement> {
 const Phone = ({ imageSrc, className, dark = false }: PhoneProps) => {
   return (
     <div className="relative h-full">
-      <div className={cn("relative overflow-hidden", className)}>
+      <div className={cn("relative overflow-hidden rounded-[55px]", className)}>
         <Image
           src={
             dark
@@ -23,7 +23,11 @@ const Phone = ({ imageSrc, className, dark = false }: PhoneProps) => {
           className="object-contain z-[99]"
         />
       </div>
-      <div className={cn("absolute top-0", className)}>
+      <div
+        className={cn(
+          "absolute top-0 w-full h-full overflow-hidden rounded-[55px]"
+        )}
+      >
         <Image
           src={imageSrc}
           alt="overlay image"

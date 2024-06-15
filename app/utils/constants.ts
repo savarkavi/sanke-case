@@ -1,8 +1,8 @@
 export const COLORS = [
   { label: "Black", color: "black", tw: "bg-black" },
   { label: "Blue", color: "blue", tw: "bg-blue-600" },
-  { label: "Red", color: "red", tw: "bg-rose-600" },
-];
+  { label: "Rose", color: "rose", tw: "bg-rose-600" },
+] as const;
 
 export const MODELS = [
   {
@@ -29,7 +29,7 @@ export const MODELS = [
     label: "iPhone 15",
     value: "iphone15",
   },
-];
+] as const;
 
 export const MATERIALS = [
   {
@@ -44,7 +44,7 @@ export const MATERIALS = [
     description: "Scratch-resistant coating",
     price: 5_00,
   },
-];
+] as const;
 
 export const FINISHES = [
   {
@@ -59,4 +59,4 @@ export const FINISHES = [
     description: "Soft grippy texture",
     price: 3_00,
   },
-];
+] as const;
