@@ -1,6 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { WebhookEvent, currentUser } from "@clerk/nextjs/server";
+import { createUser } from "@/actions/createUser";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
@@ -11,6 +12,8 @@ export async function POST(req: Request) {
       "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
     );
   }
+
+  const user = await currentUser();
 
   // Get the headers
   const headerPayload = headers();
@@ -56,7 +59,9 @@ export async function POST(req: Request) {
   console.log("Webhook body:", body);
 
   if (evt.type === "user.created") {
-    console.log("userId:", evt.data.id);
+    console.log("user created");
+
+    await createUser({ email: user?.emailAddresses[0].emailAddress });
   }
 
   return new Response("", { status: 200 });
