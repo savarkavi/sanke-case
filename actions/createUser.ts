@@ -3,9 +3,9 @@
 import { db } from "@/db";
 
 export const createUser = async ({ email }: { email: string | undefined }) => {
-  if (!email) return;
+  console.log("user saved in DB");
 
-  console.log("user created");
+  if (!email) return;
 
   try {
     await db.user.create({
