@@ -1,6 +1,6 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { WebhookEvent, currentUser } from "@clerk/nextjs/server";
+import { WebhookEvent } from "@clerk/nextjs/server";
 import { createUser } from "@/actions/createUser";
 
 export async function POST(req: Request) {
@@ -12,8 +12,6 @@ export async function POST(req: Request) {
       "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
     );
   }
-
-  const user = await currentUser();
 
   // Get the headers
   const headerPayload = headers();
@@ -59,9 +57,10 @@ export async function POST(req: Request) {
   console.log("Webhook body:", body);
 
   if (evt.type === "user.created") {
+    const { email_addresses } = evt.data;
     console.log("user created");
 
-    await createUser({ email: user?.emailAddresses[0].emailAddress });
+    await createUser({ email: email_addresses[0].email_address });
   }
 
   return new Response("", { status: 200 });
