@@ -4,12 +4,17 @@ import { Configuration } from "@prisma/client";
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
 import Phone from "./Phone";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { createCheckoutSession } from "@/actions/createCheckoutSession";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const [showConfetti, setShowConffeti] = useState(false);
+  const router = useRouter();
 
   useEffect(() => setShowConffeti(true), []);
 
@@ -18,6 +23,21 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   let totalPrice = 14_00;
   if (material === "polycarbonate") totalPrice += 5_00;
   if (finish === "textured") totalPrice += 3_00;
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["checkout-session"],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) {
+        router.push(url);
+      } else {
+        return;
+      }
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again later");
+    },
+  });
 
   return (
     <div className="w-full h-full">
@@ -114,10 +134,14 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
               <div className="mt-8 flex justify-end pb-12">
                 <Button
-                  onClick={() => {}}
-                  className="px-4 sm:px-6 lg:px-8 bg-green-500 hover:bg-green-600"
+                  onClick={() => mutate({ configId: configuration.id })}
+                  className="px-4 sm:px-6 lg:px-8 bg-green-500 hover:bg-green-600 flex justify-center items-center w-24"
                 >
-                  Check out <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                  {isPending ? (
+                    <LoaderCircle className="animate-spin" />
+                  ) : (
+                    "Checkout"
+                  )}
                 </Button>
               </div>
             </div>

@@ -1,6 +1,8 @@
+"use server";
+
 import { db } from "@/db";
 import { stripe } from "@/lib/stripe";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { Order } from "@prisma/client";
 
 export const createCheckoutSession = async ({
@@ -17,10 +19,20 @@ export const createCheckoutSession = async ({
       throw new Error("No such configuration was found");
     }
 
-    const { userId } = auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!user) {
       throw new Error("You have to sign in first");
+    }
+
+    const dbUser = await db.user.findFirst({
+      where: {
+        email: user.emailAddresses[0].emailAddress,
+      },
+    });
+
+    if (!dbUser) {
+      throw new Error("No user found");
     }
 
     const { finish, material } = configuration;
@@ -33,7 +45,7 @@ export const createCheckoutSession = async ({
 
     const existingOrder = await db.order.findFirst({
       where: {
-        userId,
+        userId: dbUser.id,
         configurationId: configuration.id,
       },
     });
@@ -44,7 +56,7 @@ export const createCheckoutSession = async ({
       order = await db.order.create({
         data: {
           amount: price / 100,
-          userId,
+          userId: dbUser.id,
           configurationId: configuration.id,
         },
       });
@@ -60,13 +72,13 @@ export const createCheckoutSession = async ({
     });
 
     const stripeSession = await stripe.checkout.sessions.create({
-      success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thankyou?orderId=${order.id}`,
+      success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
       cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure?preview?id=${configuration.id}`,
-      payment_method_types: ["card", "paypal"],
+      payment_method_types: ["card"],
       mode: "payment",
       shipping_address_collection: { allowed_countries: ["IN", "US"] },
       metadata: {
-        userId,
+        userId: dbUser.id,
         orderId: order.id,
       },
       line_items: [{ price: product.default_price as string, quantity: 1 }],
@@ -75,5 +87,6 @@ export const createCheckoutSession = async ({
     return { url: stripeSession.url };
   } catch (error) {
     console.log(error);
+    return { url: null };
   }
 };

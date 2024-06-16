@@ -59,7 +59,6 @@ export async function POST(req: Request) {
   if (evt.type === "user.created") {
     const { email_addresses } = evt.data;
     console.log("user created");
-
     await createUser({ email: email_addresses[0].email_address });
   }
 
