@@ -25,7 +25,6 @@ export async function POST(req: Request) {
 
     if (event.type === "checkout.session.completed") {
       console.log("here");
-
       if (!event.data.object.customer_details?.email) {
         throw new Error("Missing user email");
       }
