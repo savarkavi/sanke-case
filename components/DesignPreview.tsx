@@ -29,8 +29,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     mutationFn: createCheckoutSession,
     onSuccess: ({ url }) => {
       if (url) {
-        if (url === `${process.env.NEXT_PUBLIC_SERVER_URL}`)
-          toast.success("Order successful. Check you Email");
+        toast.success("Order successful. Check you Email");
         router.push(url);
       } else {
         return;
